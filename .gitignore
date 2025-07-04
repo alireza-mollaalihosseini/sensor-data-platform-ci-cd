@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# Docker
+*.log
+*.pid
+
+# IDEs
+.vscode/
+.idea/
+
+# GitHub Actions secrets (local)
+.env
+.env.*
+
+# Byte-compiled and virtual environments
+*.egg-info/
+.venv/
+venv/
+
+# AWS secrets
+.env.aws

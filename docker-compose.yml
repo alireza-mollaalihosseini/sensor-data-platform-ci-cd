@@ -1,0 +1,38 @@
+version: '3.8' 
+services:
+  mosquitto:
+    image: eclipse-mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto_config:/mosquitto/config
+
+  publisher:
+    image: 705711146547.dkr.ecr.eu-central-1.amazonaws.com/publisher:latest
+    depends_on:
+      - mosquitto
+    command: ["./wait-for-it.sh", "mosquitto:1883", "--", "python", "publisher.py"]
+
+  listener:
+    image: 705711146547.dkr.ecr.eu-central-1.amazonaws.com/listener:latest
+    depends_on:
+      - mosquitto
+      - db
+    volumes:
+      - ./data:/app/data
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: sensoruser
+      POSTGRES_PASSWORD: sensorpass
+      POSTGRES_DB: sensordata
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:

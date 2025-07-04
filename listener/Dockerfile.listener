@@ -1,0 +1,18 @@
+# Dockerfile.listener
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install netcat
+RUN apt-get update && apt-get install -y netcat-openbsd && apt-get clean
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+RUN mkdir -p data
+
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
+
+CMD ["/wait-for-it.sh", "db:5432", "--", "python", "listener.py"]
